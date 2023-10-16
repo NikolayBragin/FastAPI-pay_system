@@ -1,0 +1,36 @@
+version: "3"
+
+
+services:
+  database:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    entrypoint:
+      - "POSTGRES_HOST_AUTH_METHOD=trust"
+
+  redis_db:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+
+  api:
+    build: .
+    volumes:
+      - .:/pay_system
+    ports:
+      - "2424:2424"
+    command:
+      - uvicorn
+      - main:app
+      - --host=0.0.0.0
+      - --port=2424
+    depends_on:
+      - database
+      - redis_db
+
+volumes:
+  - postgres_data:
+
+
